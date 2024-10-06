@@ -20,7 +20,7 @@ dependencies {
     implementation 'io.netty:netty-transport:4.1.113.Final'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0'
 
     implementation "dev.inmo:krontab:2.5.0"
 
