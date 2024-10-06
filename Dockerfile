@@ -7,7 +7,7 @@ RUN gradle build -x test
 FROM ubuntu:latest
 LABEL authors="dpozinen"
 
-ARG PROJECT_VERSION='1.0-SNAPSHOT'
+ARG PROJECT_VERSION
 
 RUN apt -y update
 RUN apt -y install openjdk-17-jre

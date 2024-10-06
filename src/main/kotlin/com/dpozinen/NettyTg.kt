@@ -24,14 +24,13 @@ import io.netty.handler.ssl.SslContextBuilder.forClient
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import io.netty.util.CharsetUtil
 import kotlinx.coroutines.runBlocking
-import java.io.File
 import java.lang.System.getenv
 import java.net.URI
 
 private val tgHost = getenv().getOrDefault("TG_HOST", "https://api.telegram.org")
 private val tgPort = getenv().getOrDefault("TG_PORT", "443").toInt()
 private val tgBotId = getenv().getOrDefault("TG_BOT_ID", "")
-private val tgChatId = getenv().getOrDefault("TG_CHAT_ID", "211015066")
+private val tgChatId = getenv().getOrDefault("TG_CHAT_ID", "")
 private val wordCount = getenv().getOrDefault("WORD_COUNT", "3").toInt()
 private val wordCron = getenv().getOrDefault("WORD_CRON", "0 0 8 * *")
 
