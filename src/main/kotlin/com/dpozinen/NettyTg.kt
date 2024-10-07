@@ -28,7 +28,9 @@ import kotlinx.coroutines.runBlocking
 import java.lang.System.getenv
 import java.net.URI
 
-private val tgHost = getenv().getOrDefault("TG_HOST", "https://api.telegram.org")
+private const val API_TELEGRAM_ORG = "api.telegram.org"
+
+private val tgHost = getenv().getOrDefault("TG_HOST", "https://$API_TELEGRAM_ORG")
 private val tgPort = getenv().getOrDefault("TG_PORT", "443").toInt()
 private val tgBotId = getenv().getOrDefault("TG_BOT_ID", "")
 private val tgChatId = getenv().getOrDefault("TG_CHAT_ID", "")
@@ -81,8 +83,10 @@ fun run(channel: Channel) {
             if (addRepeatedMessaged) channel.write(TgMessage("⚠\uFE0F Word cycle complete"))
 
             println("Sending words: ${batch.map { it.french }}")
+
             batch.forEach { word -> channel.write(word.asMessage()) }
             channel.flush()
+
             println("Current cursor: $cursor")
         }
     }
@@ -105,8 +109,8 @@ class TgRequestHandler : MessageToMessageEncoder<TgMessage>() {
     override fun encode(ctx: ChannelHandlerContext, msg: TgMessage, out: MutableList<Any>) {
         val request = tgRequest(ctx, msg)
         with(request.headers()) {
-            set(HOST, "api.telegram.org");
-            set(CONNECTION, KEEP_ALIVE);
+            set(HOST, API_TELEGRAM_ORG)
+            set(CONNECTION, KEEP_ALIVE)
             set(ACCEPT, "*/*")
             set(CONTENT_TYPE, APPLICATION_JSON)
             set(CONTENT_LENGTH, request.content().readableBytes())
