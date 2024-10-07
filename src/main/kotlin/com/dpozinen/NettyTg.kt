@@ -7,6 +7,7 @@ import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
+import io.netty.handler.codec.MessageToMessageEncoder
 import io.netty.handler.codec.http.DefaultFullHttpRequest
 import io.netty.handler.codec.http.HttpClientCodec
 import io.netty.handler.codec.http.HttpContent
@@ -79,6 +80,7 @@ fun run(channel: Channel) {
 
             if (addRepeatedMessaged) channel.write(TgMessage("⚠\uFE0F Word cycle complete"))
 
+            println("Sending words: ${batch.map { it.french }}")
             batch.forEach { word -> channel.write(word.asMessage()) }
             channel.flush()
             println("Current cursor: $cursor")
@@ -99,18 +101,17 @@ class SocketChannelInitializer(
     }
 }
 
-
-class TgRequestHandler : ChannelOutboundHandlerAdapter() {
-    override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        if (msg is TgMessage) {
-            val request = tgRequest(ctx, msg)
-            request.headers().set(HOST, "api.telegram.org");
-            request.headers().set(CONNECTION, KEEP_ALIVE);
-            request.headers().set(ACCEPT, "*/*")
-            request.headers().set(CONTENT_TYPE, APPLICATION_JSON)
-            request.headers().set(CONTENT_LENGTH, request.content().readableBytes())
-            ctx.writeAndFlush(request)
+class TgRequestHandler : MessageToMessageEncoder<TgMessage>() {
+    override fun encode(ctx: ChannelHandlerContext, msg: TgMessage, out: MutableList<Any>) {
+        val request = tgRequest(ctx, msg)
+        with(request.headers()) {
+            set(HOST, "api.telegram.org");
+            set(CONNECTION, KEEP_ALIVE);
+            set(ACCEPT, "*/*")
+            set(CONTENT_TYPE, APPLICATION_JSON)
+            set(CONTENT_LENGTH, request.content().readableBytes())
         }
+        out.add(request)
     }
 
     private fun tgRequest(ctx: ChannelHandlerContext, msg: TgMessage) =
@@ -125,12 +126,9 @@ class TgRequestHandler : ChannelOutboundHandlerAdapter() {
         )
 }
 
-class TgResponseHandler : ChannelInboundHandlerAdapter() {
-    override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-        if (msg is HttpContent) {
-            println(msg.content().toString(CharsetUtil.UTF_8))
-            System.out.flush()
-        }
+class TgResponseHandler : SimpleChannelInboundHandler<HttpContent>() {
+    override fun channelRead0(ctx: ChannelHandlerContext, msg: HttpContent) {
+        println(msg.content().toString(CharsetUtil.UTF_8))
     }
 }
 
@@ -146,4 +144,4 @@ private data class Word(val french: String, val english: String) {
         .joinToString("")
 }
 
-private data class TgMessage(val text: String)
+data class TgMessage(val text: String)
