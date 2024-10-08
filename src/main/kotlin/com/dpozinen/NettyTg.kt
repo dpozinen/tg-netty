@@ -3,7 +3,11 @@ package com.dpozinen
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import dev.inmo.krontab.doInfinity
 import io.netty.bootstrap.Bootstrap
-import io.netty.channel.*
+import io.netty.channel.Channel
+import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelInitializer
+import io.netty.channel.ChannelOption.SO_KEEPALIVE
+import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
@@ -49,29 +53,28 @@ fun main() {
         with(Bootstrap()) {
             group(eventLoopGroup)
             channel(NioSocketChannel::class.java)
-            option(ChannelOption.SO_KEEPALIVE, true)
+            option(SO_KEEPALIVE, true)
 
             handler(SocketChannelInitializer())
 
-            val channel = connect(uri.host, tgPort).sync().channel()
-
-            channel.writeAndFlush(TgMessage("UP"))
-
-            run(channel)
-
-            channel.closeFuture().sync()
+            begin { connect(uri.host, tgPort).sync().channel() }
         }
     } finally {
         eventLoopGroup.shutdownGracefully()
     }
 }
 
-fun run(channel: Channel) {
+fun begin(connect: () -> Channel) {
     var cursor = 0
     var addRepeatedMessaged = false
+    var channel = connect()
+
+    channel.writeAndFlush(TgMessage("UP"))
 
     runBlocking {
         doInfinity(wordCron) {
+            if (!channel.isActive) channel = connect()
+
             if (cursor >= words.count - wordCount - 1) {
                 cursor = 0
                 addRepeatedMessaged = true
