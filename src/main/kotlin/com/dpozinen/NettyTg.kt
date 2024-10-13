@@ -65,7 +65,6 @@ fun main() {
 }
 
 fun begin(connect: () -> Channel) {
-    var cursor = 0
     var addRepeatedMessaged = false
     var channel = connect()
 
