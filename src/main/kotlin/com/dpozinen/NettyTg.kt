@@ -86,6 +86,7 @@ fun begin(connect: () -> Channel) {
 
             println("Sending words: ${batch.map { it.french }}")
 
+            channel.write(TgMessage("||cursor at $cursor||"))
             batch.forEach { word -> channel.write(word.asMessage()) }
             channel.flush()
 
