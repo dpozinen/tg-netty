@@ -38,6 +38,7 @@ private val tgHost = getenv().getOrDefault("TG_HOST", "https://$API_TELEGRAM_ORG
 private val tgPort = getenv().getOrDefault("TG_PORT", "443").toInt()
 private val tgBotId = getenv().getOrDefault("TG_BOT_ID", "")
 private val tgChatId = getenv().getOrDefault("TG_CHAT_ID", "")
+private var cursor = getenv().getOrDefault("WORD_CURSOR", "0").toInt()
 private val wordCount = getenv().getOrDefault("WORD_COUNT", "3").toInt()
 private val wordCron = getenv().getOrDefault("WORD_CRON", "0 0 8 * *")
 
