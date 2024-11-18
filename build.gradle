@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.netty:netty-buffer:4.1.113.Final'
+    implementation 'io.netty:netty-buffer:4.1.115.Final'
     implementation 'io.netty:netty-codec-http:4.1.115.Final'
     implementation 'io.netty:netty-transport:4.1.115.Final'
 
