@@ -19,7 +19,7 @@ dependencies {
     implementation 'io.netty:netty-codec-http:4.1.118.Final'
     implementation 'io.netty:netty-transport:4.1.118.Final'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.3'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2'
 
     implementation "dev.inmo:krontab:2.7.2"
